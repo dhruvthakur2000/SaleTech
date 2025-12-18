@@ -1,0 +1,25 @@
+[project]
+name = "saletech"
+version = "0.1.0"
+description = "A multi-user, low-latency, AI-powered voice sales agent capable of handling 20+ concurrent real-time conversations using a central LLM (Quen) on an L40 GPU**, deployable by real organizations."
+authors = [
+    {name = "Dhruv"}
+]
+license = "LICENSE"
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "fastapi (>=0.125.0,<0.126.0)",
+    "uvicorn (>=0.38.0,<0.39.0)",
+    "pydantic (>=2.12.5,<3.0.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "loguru (>=0.7.3,<0.8.0)",
+    "redis (>=7.1.0,<8.0.0)"
+]
+
+[tool.poetry]
+packages = [{ include = "saletech", from = "src" }]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
