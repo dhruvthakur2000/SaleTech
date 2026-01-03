@@ -1,0 +1,6 @@
+from abc import ABC, abstractmethod
+
+class STTBase(ABC):
+    @abstractmethod
+    def transcribe(self, audio_path: str) -> str:
+        pass
