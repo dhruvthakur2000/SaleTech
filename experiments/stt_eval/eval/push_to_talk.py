@@ -3,8 +3,8 @@ import numpy as np
 import tempfile
 import scipy.io.wavfile as wav
 from experiments.stt_eval.models.whisper import WhisperSTT
-from experiments.stt_eval.models.vakyansh import VakyanshSTT
-from experiments.stt_eval.models.nemo import NemoSTT
+#from experiments.stt_eval.models.vakyansh import VakyanshSTT
+#from experiments.stt_eval.models.nemo import NemoSTT
 
 DURATION = 10  # seconds
 SAMPLE_RATE = 16000

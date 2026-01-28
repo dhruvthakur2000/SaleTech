@@ -9,7 +9,7 @@ logger = setup_logger()
 @asynccontextmanager
 async def lifespan(app):
     app.state.session_manager = SessionManager()
-    logger.info("SaleTech started:")
+    # logger.info("SaleTech started:")
     
     # TO D0 later:
     # - connect Redis
@@ -19,7 +19,7 @@ async def lifespan(app):
 
     yield
 
-    logger.info(" SaleTech shutting down")
+    # logger.info(" SaleTech shutting down")
 
     # TODO:
     # - close Redis

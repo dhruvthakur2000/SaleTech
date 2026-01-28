@@ -25,10 +25,15 @@ class SessionManager:
                 session_id=session_id,
                 metadata=metadata or {}
             )
-
+            session.audio_state = AudioState(
+                buffer=VADAudioBuffer(
+                    frame_bytes=320,
+                    pre_roll_frames=10
+                )
+            )
             self._sessions[session_id] = session
-            logger.info(f"Session created: {session_id}")
-            logger.debug(f"Active sessions: {list(self._sessions.keys())}")
+            # logger.info(f"Session created: {session_id}")
+            # logger.debug(f"Active sessions: {list(self._sessions.keys())}")
             return session
     
     async def get_session(self, session_id: str) -> Optional[Session]:

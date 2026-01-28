@@ -1,9 +1,13 @@
 from typing import List, Dict, Any, Literal, Optional
-from pydantic import BaseModel, Field
+import time
+import asyncio
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
 from saletech.core.session_state import SessionState
-from saletech.media.audio_state import AudioRuntimeState
+from saletech.core.audio_state import AudioState
+from saletech.media.audio_buffer import VADAudioBuffer
+
 
 
 class Message(BaseModel):
@@ -13,6 +17,7 @@ class Message(BaseModel):
 
 
 class Session(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
     session_id: str
 
     # High-level lifecycle
@@ -22,7 +27,14 @@ class Session(BaseModel):
     history: List[Message] = Field(default_factory=list)
 
     # Runtime audio state (NOT serialized)
-    audio: Optional[AudioRuntimeState] = Field(default=None, exclude=True)
+    # audio_state: AudioState = Field(
+    #     default_factory=lambda: AudioState(
+    #         buffer=VADAudioBuffer(
+    #             frame_bytes=320,  # 20ms @ 16KHz, 16 bit mono
+    #             pre_roll_frames=10
+    #         )
+    #     )
+    # )
 
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.now)
