@@ -1,25 +1,47 @@
-[project]
+[tool.poetry]
 name = "saletech"
 version = "0.1.0"
 description = "A multi-user, low-latency, AI-powered voice sales agent capable of handling 20+ concurrent real-time conversations using a central LLM (Quen) on an L40 GPU**, deployable by real organizations."
-authors = [
-    {name = "Dhruv"}
-]
+authors = ["Dhruv aka PSYRAR <dhruvshirar@gmail.com>"]
 license = "LICENSE"
 readme = "README.md"
-requires-python = ">=3.10,<4.0"
-dependencies = [
-    "fastapi (>=0.125.0,<0.126.0)",
-    "uvicorn (>=0.38.0,<0.39.0)",
-    "pydantic (>=2.12.5,<3.0.0)",
-    "python-dotenv (>=1.2.1,<2.0.0)",
-    "loguru (>=0.7.3,<0.8.0)",
-    "redis (>=7.1.0,<8.0.0)",
-    "pydantic-settings (>=2.12.0,<3.0.0)"
-]
-
-[tool.poetry]
 packages = [{ include = "saletech", from = "src" }]
+
+[tool.poetry.dependencies]
+python            = ">=3.10,<3.15"
+fastapi           = ">=0.125.0,<0.126.0"
+uvicorn           = ">=0.38.0,<0.39.0"
+pydantic          = ">=2.12.5,<3.0.0"
+python-dotenv     = ">=1.2.1,<2.0.0"
+pydantic-settings = ">=2.12.0,<3.0.0"
+
+
+ #logging and utilities
+
+loguru  = ">=0.7.3,<0.8.0"
+redis =  ">=7.1.0,<8.0.0"
+openai-whisper = "^20250625"
+websockets = "^16.0"
+structlog = "^25.5.0"
+webrtcvad = "^2.0.10"
+
+
+
+[tool.poetry.group.experiments.dependencies]
+
+openai-whisper  =" >=20250625,<20250626"
+faster-whisper =  ">=1.2.1,<2.0.0"
+jiwer  = ">=4.0.0,<5.0.0"
+torch =  ">=2.9.1,<3.0.0"
+torchaudio  = ">=2.9.1,<3.0.0"
+nemo-toolkit  = ">=2.6.0,<3.0.0"
+datasets =  ">=4.4.2,<5.0.0"
+librosa =  ">=0.11.0,<0.12.0"
+soundfile  = ">=0.13.1,<0.14.0"
+torchcodec =  ">=0.9.1,<0.10.0"
+sounddevice = "^0.5.3"
+
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
