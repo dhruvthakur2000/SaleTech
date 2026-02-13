@@ -36,5 +36,5 @@ def main():
         print(f"Transcription: {text}")
         print(f"Latency: {latency:.2f}s")
 
-if __name__ == "__main__":
+if __name__ == "__main__":   
     main()
