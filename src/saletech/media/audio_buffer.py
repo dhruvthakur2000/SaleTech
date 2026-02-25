@@ -8,12 +8,8 @@ class VADAudioBuffer:
     Ultra-low-latency audio buffer with pre-roll support.
     """
 
-    def __init__(
-        self,
-        frame_bytes: int,
-        pre_roll_frames: int = 10,
-        max_utterance_frames: int = 2000,
-    ) -> None:
+    def __init__(self,frame_bytes: int,pre_roll_frames: int = 10,max_utterance_frames: int = 2000) -> None:
+        
         self.frame_bytes = frame_bytes
 
         self._pre_roll: Deque[bytes] = deque(maxlen=pre_roll_frames)

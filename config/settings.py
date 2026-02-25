@@ -48,7 +48,7 @@ class AppSettings(BaseSettings):
     gpu_memory_fraction: float = Field(default=0.9, env="GPU_MEMORY_FRACTION")
 
     #Model Paths(Free, top-tier)
-    vad_model_name:str = "Silero_Vad"
+    vad_model_name:str = "silero_vad"
     vad_repo:str = "snakers4/silero-vad"
     # HARDCODED: These don't change, no env var needed
     # LOADED VIA: torch.hub.load(repo, model_name)
@@ -90,7 +90,7 @@ class AppSettings(BaseSettings):
     # VAD Configuration (Advanced)
     vad_threshold: float = Field(default=0.5, env="VAD_THRESHOLD")
     vad_aggressiveness: int = 3
-    vad_frame_duration_ms: int = 30
+    vad_frame_duration_ms: int = 32
     speech_onset_threshold: float = 0.5
     speech_offset_threshold: float = 0.3
     min_speech_duration_ms: int = 200  # REDUCED from 300ms to 200 ms
@@ -113,6 +113,29 @@ class AppSettings(BaseSettings):
     barge_in_energy_threshold: float = 0.6
     barge_in_delay_ms: int = 300
     barge_in_grace_period_ms: int = 500
+
+
+    @property
+    def chunk_size_samples(self) -> int:
+        """Audio chunk size in samples"""
+        return int(self.sample_rate * self.chunk_duration_ms / 1000)
+    
+    @property
+    def vad_frame_size_samples(self) -> int:
+        """VAD frame size in samples"""
+        return int(self.sample_rate * self.vad_frame_duration_ms / 1000)
+
+    @property
+    def min_speech_samples(self) -> int:
+        return int(self.sample_rate * self.min_speech_duration_ms / 1000)
+    
+    @property
+    def max_speech_samples(self) -> int:
+        return int(self.sample_rate * self.max_speech_duration_ms / 1000)
+    
+    @property
+    def eot_silence_samples(self) -> int:
+        return int(self.sample_rate * self.eot_silence_duration_ms / 1000)
 
 
 settings=AppSettings()

@@ -1,14 +1,17 @@
 from fastapi import FastAPI
 from saletech.utils.lifespan import lifespan
-from saletech.utils.logger import setup_logger
+from saletech.utils.logger import setup_logging
 from saletech.api.health import router as health_router
 from saletech.api.sessions import router as session_router 
 from config.settings import AppSettings
 from fastapi import WebSocket
-from saletech.api.audio_ws import audio_ws
+from src.saletech.api.exception_handler import (
+    saletech_exception_handler
+)
+from src.saletech.utils.errors import SaleTechException
 
 settings = AppSettings()
-logger = setup_logger()
+logger = setup_logging()
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -21,11 +24,10 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(session_router)
 
-    # @app.websocket("/ws/test")
-    # async def test_ws(websocket: WebSocket):
-    #     await websocket.accept()
-    #     await websocket.send_text("Hello from WebSocket!")
-    #     await websocket.close()
+    app.add_exception_handler(
+        SaleTechException,
+        saletech_exception_handler,
+    )
 
     return app
 

@@ -4,7 +4,6 @@ from typing import Dict, Optional
 from datetime import datetime, timedelta
 
 from saletech.core.session import Session
-from saletech.core.session_state import SessionState
 from config.settings import settings
 from saletech.utils.logger import setup_logger
 
@@ -25,12 +24,7 @@ class SessionManager:
                 session_id=session_id,
                 metadata=metadata or {}
             )
-            session.audio_state = AudioState(
-                buffer=VADAudioBuffer(
-                    frame_bytes=320,
-                    pre_roll_frames=10
-                )
-            )
+
             self._sessions[session_id] = session
             # logger.info(f"Session created: {session_id}")
             # logger.debug(f"Active sessions: {list(self._sessions.keys())}")
