@@ -184,12 +184,7 @@ class StreamingBuffer:
         self._last_speech_time = None
 
 
-    def force_finalize(self, ts):
 
-        if self._in_speech and self._speech_samples >= self.min_speech_samples:
-            return self._finalize_utterance(timestamp)
-
-        return None
 
     @property
     def metrics(self):
