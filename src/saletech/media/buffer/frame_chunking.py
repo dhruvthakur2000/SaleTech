@@ -3,8 +3,7 @@ import threading
 import time
 from typing import Optional, Tuple
 from src.saletech.utils.logger import get_logger
-from src.saletech.utils.errors import AudioProcessingError, SaleTechException
-from src.saletech.
+from src.saletech.utils.errors import AudioProcessingError
 
 logger=get_logger("saletech.audio.frame_buffer")
 
