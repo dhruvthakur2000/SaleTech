@@ -1,9 +1,13 @@
 from typing import Optional
 import time
 import numpy as np
-from src.saletech.core.vad_state import VADSessionState
-from src.saletech.media.vad_model import AdvancedVadModel
+from saletech.media.vad.vad_state import VADSessionState
+from saletech.media.vad.vad_model import AdvancedVadModel
+from src.saletech.utils.errors import SaleTechException, ValidationError
+from src.saletech.utils.logger import get_logger
 
+
+logger = get_logger("saletech.vad.service")
 
 class VADService:
     """
@@ -20,12 +24,24 @@ class VADService:
         self.state =VADSessionState()
 
     async def initialize(self):
-        if VADService._vad_model is None:
-            model = AdvancedVadModel()
-            await model.initialize()
-            VADService._vad_model= model
+        try:
+            if VADService._vad_model is None:
+                logger.info("initializing_global_vad_model")
 
-    def detect_speech(self,audio: np.ndarray):
+                model = AdvancedVadModel()
+                await model.initialize()
+
+                VADService._vad_model= model
+
+        except Exception as e:
+            logger.error("Vad_service_init_failed", error= str(e))
+            raise SaleTechException(
+                message="VADervice initialization failed",
+                error_code="VAD_SERVICE_INIT_FAILED",
+                original_exception=e
+            )
+
+    def detect_speech(self, audio: np.ndarray):
         """
         Full VAD pipeline.
 
@@ -35,21 +51,41 @@ class VADService:
             confidence
             metadata
         """
-        now=time.time()
+        if VADService._vad_model is None:
+            raise ValidationError("VAD model not initialized")
+        
+        if not isinstance(audio, np.ndarray):
+            raise ValidationError("Audio must be numpy array")
+        
+        try:
 
-        #energy estimation
-        energy= float(np.sqrt(np.mean(audio**2)))
-        self.state.update_energy(energy)
 
-        background_noise=self.state.background_noise
+            now=time.time()
 
-        #raw VAD inference
-        is_speech, confidence, meta = (
-            VADService._vad_model.detect_speech(audio,background_noise)
-        )
+            background_noise=self.state.background_noise
 
-        #end of turn logic
-        eot, eot_meta = self.state.detect_end_of_turn(is_speech, now)
-        meta.update(eot_meta)
+            #raw VAD inference
+            is_speech, confidence, meta = (
+                VADService._vad_model.detect_speech(audio,background_noise)
+            )
+            
+            self.state.update_energy(meta["energy"])
 
-        return is_speech,eot,confidence,meta
+            #end of turn logic
+            is_eot, eot_meta = self.state.detect_end_of_turn(is_speech, now)
+            meta.update(eot_meta)
+
+            return is_speech,confidence,is_eot,meta
+        
+        except SaleTechException:
+            raise
+
+        except Exception as e:
+            logger.error("vad_service_detect_failed", error=str(e))
+            raise SaleTechException(
+                message="VADService detection failure",
+                error_code="VAD_SERVICE_DETECT_FAILED",
+                original_exception=e
+            )
+            
+
