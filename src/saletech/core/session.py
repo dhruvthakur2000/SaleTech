@@ -3,8 +3,9 @@ import time
 import asyncio
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
+from src.saletech.services.streaming_asr import StreamingASR
 
-from saletech.core.session_state import SessionState
+
 from saletech.core.audio_state import AudioState
 from saletech.media.audio_buffer import VADAudioBuffer
 
@@ -47,3 +48,9 @@ class Session(BaseModel):
     def touch(self) -> None:
         self.updated_at = datetime.now()
         self.last_active = datetime.now()
+
+
+    class VoiceSession:
+
+        async def start(self):
+            self.asr = await StreamingASR()
