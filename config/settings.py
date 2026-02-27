@@ -46,7 +46,17 @@ class AppSettings(BaseSettings):
     #GPU Configuration
     cuda_visible_device: str= Field(default="0", env="CUDA_VISIBLE_DEVICE")
     gpu_memory_fraction: float = Field(default=0.9, env="GPU_MEMORY_FRACTION")
-
+    # ========================================
+    # Model Paths (Free, Top-Tier Models)
+    # ========================================
+    # LLM: Qwen-2.5-7B (Best open-source LLM)
+    qwen_model_path: str = Field(default="Qwen/Qwen2.5-7B-Instruct", env="QWEN_MODEL_PATH")
+    
+    # ASR: Faster-Whisper Large-v3 (Best free ASR, streaming capable)
+    whisper_model_path: str = Field(default="large-v3", env="WHISPER_MODEL_PATH")
+    whisper_device: str = Field(default="cuda", env="WHISPER_DEVICE")
+    whisper_compute_type: str = Field(default="float16", env="WHISPER_COMPUTE_TYPE")
+    
     #Model Paths(Free, top-tier)
     vad_model_name:str = "silero_vad"
     vad_repo:str = "snakers4/silero-vad"
@@ -86,6 +96,11 @@ class AppSettings(BaseSettings):
     # WHY: Avoid showing wrong words that change immediately
     
     asr_final_confidence_threshold: float = 0.7
+    asr_beam_size:int=5
+    asr_best_of:int=5
+    asr_max_concurrent_jobs: int = 2
+    asr_cpu_threads: int = 4
+
  
     # VAD Configuration (Advanced)
     vad_threshold: float = Field(default=0.5, env="VAD_THRESHOLD")
@@ -100,11 +115,7 @@ class AppSettings(BaseSettings):
     # End-of-Turn Detection
     
     eot_silence_duration_ms: int = 600  # REDUCED from 800ms
-
-    
     eot_max_pause_ms: int = 400
-
-    
     eot_adaptive_enabled: bool = True
 
 
@@ -113,6 +124,25 @@ class AppSettings(BaseSettings):
     barge_in_energy_threshold: float = 0.6
     barge_in_delay_ms: int = 300
     barge_in_grace_period_ms: int = 500
+    #
+    #performance tuning 
+    # Audio buffer sizes
+    audio_input_buffer_size: int = 100  # Frames
+    audio_output_buffer_size: int = 50  # Frames
+    
+    # Worker pool sizes
+    vad_workers: int = 2
+    asr_workers: int = 4
+    tts_workers: int = 2
+    
+    # Batch processing
+    vad_batch_size: int = 16  # Process multiple frames together
+    
+    # ========================================
+    # Latency Budgets (Aggressive)
+    # ========================================
+    vad_timeout_ms: int = 50
+    asr_timeout_ms: int = 300
 
 
     @property

@@ -184,8 +184,6 @@ class StreamingBuffer:
         self._last_speech_time = None
 
 
-
-
     @property
     def metrics(self):
 

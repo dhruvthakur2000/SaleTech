@@ -1,7 +1,3 @@
-"""
-SaleTech Structured Logging
-Production-grade logging with context
-"""
 import os
 from logging.handlers import RotatingFileHandler
 import structlog
