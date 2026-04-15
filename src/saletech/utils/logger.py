@@ -25,7 +25,6 @@ def setup_logging(log_level: str = "INFO", log_dir: Optional[str]= None):
         f"app_{datetime.now().strftime('%H-%M-%S___%Y-%m-%d')}.log"
     )
 
-    logging.getLogger().debug("logger_initialized", log_file=log_file)
 
     # Step 2: File handler with rotation (rotates at 10MB, keeps 5 backups)
     file_handler = RotatingFileHandler(
@@ -49,7 +48,7 @@ def setup_logging(log_level: str = "INFO", log_dir: Optional[str]= None):
     root_logger.setLevel(getattr(logging, log_level.upper(),logging.INFO))
 
     #step 5: Remove existing handlers (clean slate)
-    if not root_logger.handlers:
+    if root_logger.handlers:
         for handler in root_logger.handlers[:]:
             root_logger.removeHandler(handler)
 
@@ -72,7 +71,7 @@ def setup_logging(log_level: str = "INFO", log_dir: Optional[str]= None):
             structlog.processors.TimeStamper(fmt="iso"),
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
-            structlog.processors.CallsiteParameterAdder,
+            structlog.processors.CallsiteParameterAdder(),
             structlog.processors.JSONRenderer()
         ],
         wrapper_class=structlog.stdlib.BoundLogger,
@@ -81,6 +80,10 @@ def setup_logging(log_level: str = "INFO", log_dir: Optional[str]= None):
         cache_logger_on_first_use=True,
     )
 
+    structlog.getLogger("saletech.bootstrap").info(
+        "logger_initialized",
+        log_file=log_file
+        )
 
 def get_logger(name: str) -> structlog.BoundLogger:
     """Get a logger instance"""

@@ -3,11 +3,13 @@ import uuid
 from typing import Dict, Optional
 from datetime import datetime, timedelta
 
-from saletech.core.session import Session
-from config.settings import settings
-from saletech.utils.logger import setup_logger
+from saletech.core.session import VoiceSession as Session
+from saletech.models.schemas import SessionState
 
-logger = setup_logger()
+from config.settings import settings
+from saletech.utils.logger import setup_logging
+
+logger = setup_logging()
 
 class SessionManager:
     def __init__(self):

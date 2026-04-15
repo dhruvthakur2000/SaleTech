@@ -1,9 +1,9 @@
 from contextlib import asynccontextmanager
-from saletech.utils.logger import setup_logger
+from saletech.utils.logger import setup_logging
 from saletech.core.session_manager import SessionManager
 
 
-logger = setup_logger()
+logger = setup_logging()
 
 
 @asynccontextmanager

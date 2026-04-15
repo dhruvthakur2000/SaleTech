@@ -5,6 +5,7 @@ from saletech.api.health import router as health_router
 from saletech.api.sessions import router as session_router 
 from config.settings import AppSettings
 from fastapi import WebSocket
+from src.saletech.transcriber.router import router as transcriber_router
 from src.saletech.services.streaming_asr import StreamingASR
 from src.saletech.api.exception_handler import (
     saletech_exception_handler
@@ -24,6 +25,7 @@ def create_app() -> FastAPI:
     #routers
     app.include_router(health_router)
     app.include_router(session_router)
+    app.include_router(transcriber_router)
 
     app.add_exception_handler(
         SaleTechException,
@@ -34,8 +36,6 @@ def create_app() -> FastAPI:
 
 app = create_app()
 
-# Expose session_manager globally for import in other modules
-session_manager = app.state.session_manager
 
 @app.on_event("startup")
 async def startup_event():

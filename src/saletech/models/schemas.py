@@ -64,3 +64,23 @@ class TranscriptionResult(BaseModel):
     latency_ms: Optional[float] = None
     audio_duration_ms: Optional[float] = None
 
+class SessionMetrics(BaseModel):
+    """Per-session performance metrics"""
+    session_id: str
+    
+    # Latency tracking
+    vad_latencies_ms: List[float] = Field(default_factory=list)
+    asr_latencies_ms: List[float] = Field(default_factory=list)
+    llm_latencies_ms: List[float] = Field(default_factory=list)
+    tts_latencies_ms: List[float] = Field(default_factory=list)
+    
+    # Counters
+    total_utterances: int = 0
+    total_responses: int = 0
+    interruptions: int = 0
+    errors: int = 0
+    
+    # Session info
+    started_at: datetime = Field(default_factory=datetime.now)
+    last_activity: datetime = Field(default_factory=datetime.now)
+
