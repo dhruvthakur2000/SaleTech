@@ -1,35 +1,41 @@
 from src.saletech.utils.logger import get_logger
-from typing import Optional
+from typing import Optional, Any
 
 class SaleTechException(Exception):
-    """BAse exception for SAletech Errors."""
-    def __init__(self,
-                 message: str,
-                 error_code: str,
-                 status_code: int = 500,
-                 context: dict = None,
-                 original_exception: Exception = None):
+    """Base exception for all SaleTech application errors."""
+
+    def __init__(
+        self,
+        message: str,
+        error_code: str,
+        status_code: int = 500,
+        context: Optional[dict[str, Any]] = None,
+        original_exception: Optional[Exception] = None,
+    ):
         self.message = message
         self.error_code = error_code
         self.status_code = status_code
         self.context = context or {}
         self.original_exception = original_exception
-        super().__init__(message)        
+        super().__init__(message)
 
-    def to_dict(self):
-
+    def to_dict(self) -> dict[str, Any]:
+        """Return serializable error response."""
         return {
             "message": self.message,
             "error_code": self.error_code,
             "status_code": self.status_code,
             "context": self.context,
-            "orignal_exception": str(self.original_exception) if self.original_exception else None
         }
-    
-    def log(self, level="error"):
+
+    def log(self, level: str = "error") -> None:
+        """Log the exception using structured logging."""
         logger = get_logger("saletech.errors")
 
-        log_func = getattr(logger, level, logger.error)
+        if not hasattr(logger, level):
+            raise ValueError(f"Invalid log level: {level}")
+
+        log_func = getattr(logger, level)
 
         log_func(
             "exception_raised",
@@ -37,8 +43,7 @@ class SaleTechException(Exception):
             message=self.message,
             status_code=self.status_code,
             context=self.context,
-            original_exception=str(self.original_exception)
-            if self.original_exception else None,
+            exc_info=self.original_exception or True,
         )
 
 class SessionExpiredError(SaleTechException):
@@ -84,5 +89,5 @@ class AudioProcessingError(SaleTechException):
             message=message,
             error_code="AUDIO_PROCESSING_ERROR",
             status_code=500,
-            context=context,
+            context=context
         )
