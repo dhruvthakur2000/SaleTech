@@ -56,6 +56,17 @@ class AppSettings(BaseSettings):
     whisper_model_path: str = Field(default="large-v3", env="WHISPER_MODEL_PATH")
     whisper_device: str = Field(default="cuda", env="WHISPER_DEVICE")
     whisper_compute_type: str = Field(default="float16", env="WHISPER_COMPUTE_TYPE")
+
+    # LLM: Qwen chat generation
+    llm_device: str = Field(default="auto", env="LLM_DEVICE")
+    llm_torch_dtype: str = Field(default="auto", env="LLM_TORCH_DTYPE")
+    llm_load_in_8bit: bool = Field(default=False, env="LLM_LOAD_IN_8BIT")
+    llm_attn_implementation: Optional[str] = Field(default=None, env="LLM_ATTN_IMPLEMENTATION")
+    llm_max_tokens: int = Field(default=256, env="LLM_MAX_TOKENS")
+    llm_temperature: float = Field(default=0.7, env="LLM_TEMPERATURE")
+    llm_top_p: float = Field(default=0.9, env="LLM_TOP_P")
+    llm_max_conversation_history: int = Field(default=12, env="LLM_MAX_CONVERSATION_HISTORY")
+    llm_warmup_enabled: bool = Field(default=False, env="LLM_WARMUP_ENABLED")
     
     #Model Paths(Free, top-tier)
     vad_model_name:str = "silero_vad"
@@ -170,4 +181,14 @@ class AppSettings(BaseSettings):
 
 settings=AppSettings()
 
+SALES_AGENT_SYSTEM_PROMPT = """
+You are SaleTech, a concise and helpful voice sales assistant.
+You help customers understand the product, answer objections, and move the conversation forward naturally.
+Keep responses short enough for spoken conversation.
+Ask one clear follow-up question when it helps.
+""".strip()
 
+DEFAULT_PRODUCT_CONTEXT = """
+SaleTech is an AI-powered voice sales assistant for real-time customer conversations.
+It can listen, transcribe, understand buyer intent, and help guide the next response.
+""".strip()
