@@ -186,7 +186,9 @@ class AdvancedVadModel:
             else:
                 audio_int16 = audio
 
-            frame_duration_ms = self.settings.vad_frame_duration_ms
+            # WebRTC VAD only accepts 10, 20, or 30 ms frames.
+            # The app can still use 32 ms / 512-sample frames for Silero.
+            frame_duration_ms = 30
             expected_length = int(self.sample_rate * frame_duration_ms / 1000)
 
             if len(audio_int16) != expected_length:

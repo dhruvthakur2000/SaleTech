@@ -216,7 +216,7 @@ async def get_asr_service() -> StreamingASR:
     async with _asr_init_lock:
         if _asr_instance is None:
             instance = StreamingASR()
-            await _asr_instance.initialize()
+            await instance.initialize()
             _asr_instance = instance
 
     return _asr_instance
