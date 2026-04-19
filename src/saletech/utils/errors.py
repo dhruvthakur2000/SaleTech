@@ -84,10 +84,16 @@ class AuthorizationError(SaleTechException):
         )
 
 class AudioProcessingError(SaleTechException):
-    def __init__(self, message: str, context: dict | None = None):
+    def __init__(
+        self,
+        message: str,
+        context: dict | None = None,
+        original_exception: Exception | None = None,
+    ):
         super().__init__(
             message=message,
             error_code="AUDIO_PROCESSING_ERROR",
             status_code=500,
-            context=context
+            context=context,
+            original_exception=original_exception,
         )

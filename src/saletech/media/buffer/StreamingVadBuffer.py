@@ -1,7 +1,6 @@
 from collections import deque
 import numpy as np 
 from typing import Optional
-import time
 from config.settings import AppSettings
 from src.saletech.utils.logger import get_logger
 from src.saletech.utils.errors import AudioProcessingError
@@ -88,7 +87,7 @@ class StreamingBuffer:
                                 )
                 # get last N frames from buffer for padding
 
-                self.current_utterance = list (self._frame_buffer)[-pad_frames:]
+                self._current_utterance = list(self._frame_buffer)[-pad_frames:]
 
             else:
                 self._current_utterance.append(audio)
@@ -109,7 +108,7 @@ class StreamingBuffer:
                 utterance = self._finalize_utterance(timestamp)
                 return utterance
             else:
-                self._reset
+                self._reset()
 
         # check max length (safety valve)
         if self._speech_samples >= self.max_speech_samples:
@@ -126,7 +125,7 @@ class StreamingBuffer:
     def _finalize_utterance(
             self,
             end_time: float
-            )->tuple[np.ndarray,dict]:
+            ) -> Optional[tuple[np.ndarray, dict]]:
         """
         Finalize and return complete utterance.
         
@@ -152,7 +151,7 @@ class StreamingBuffer:
             meta={
                 "start_ts": self._utterance_start_time,
                 "end_ts": end_time,
-                "duration_ms": end_time-self._utterance_start_time* 1000,
+                "duration_ms": (end_time - self._utterance_start_time) * 1000,
                 "audio_length_ms": len(utterance_audio)/self.sample_rate *1000,
                 "speech_sample": self._speech_samples               
             }
@@ -162,7 +161,7 @@ class StreamingBuffer:
                 duration_ms=meta["duration_ms"]
             )
 
-            self.reset()
+            self._reset()
 
             return utterance_audio, meta
         
@@ -183,6 +182,19 @@ class StreamingBuffer:
         self._utterance_start_time = None
         self._last_speech_time = None
 
+    def flush(self, timestamp: Optional[float] = None) -> Optional[tuple[np.ndarray, dict]]:
+        """
+        Finalize the current utterance, if one is buffered.
+
+        Useful for local file tests where the file may end before enough
+        trailing silence arrives to trigger normal end-of-turn detection.
+        """
+        if not self._in_speech or self._speech_samples < self.min_speech_samples:
+            self._reset()
+            return None
+
+        return self._finalize_utterance(timestamp or self._last_speech_time)
+
 
     @property
     def metrics(self):
@@ -191,5 +203,5 @@ class StreamingBuffer:
             "in_speech": self._in_speech,
             "speech_samples": self._speech_samples,
             "silence_samples": self._silence_samples,
-            "frames_buffered": len(self._frames),
+            "frames_buffered": len(self._frame_buffer),
         }

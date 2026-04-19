@@ -43,7 +43,7 @@ class TranscriptionPipeline:
         #track VAD speech window timing
         self._current_vad_start: Optional[float] = None
 
-        self.initialized = False
+        self._initialized = False
 
         #------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ class TranscriptionPipeline:
 
             #step 2: push into speech window buffer
             result = self.speech_buffer.add_frame(
-                pcm=pcm,
+                audio=pcm,
                 is_speech=is_speech,
                 is_eot=is_eot,
                 timestamp=now
@@ -140,6 +140,34 @@ class TranscriptionPipeline:
             raise AudioProcessingError(
                 "Frame processing failed",
                 original_exception = e
+            )
+
+    async def flush(self):
+        """
+        Finalize any buffered speech that did not receive an EOT frame.
+        """
+        try:
+            result = self.speech_buffer.flush(time.time())
+            if result is None:
+                return
+
+            audio, buffer_meta = result
+            await self._handle_finalized_utterance(
+                audio=audio,
+                vad_start=self._current_vad_start or buffer_meta["start_ts"],
+                vad_end=buffer_meta["end_ts"],
+                duration_ms=buffer_meta["duration_ms"],
+            )
+            self._current_vad_start = None
+        except Exception as e:
+            logger.error(
+                "transcription_flush_failed",
+                session_id=self.session_id,
+                exc_info=True,
+            )
+            raise AudioProcessingError(
+                "Pipeline flush failed",
+                original_exception=e,
             )
         
     #--------------------------------------------------------------------------------
@@ -203,7 +231,7 @@ class TranscriptionPipeline:
         """
 
         try:
-            self.writter.close()
+            self.writer.close()
 
             logger.info("transciption pipeline is shut down",
                         session_id=self.session_id
